@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<head>
+<!-- official OU colors:  crimson #4F1315 cream #FDF908  source: https://alumni.ou.edu/home/webcomm/webguide/designconsiderations.html -->
+<!-- off white #f5f4f0   reddish slate #E4D2C1  OU brickred #4F1315   light green #FFEFB2  light blue #F6F8FF   light-green #fceeaf   royal blue #0D2A70   light-green #FFFCCC  light gray F6F4F0 -->
+<!--<body bgcolor=#FDF9D8  style="font-family:arial;font-size:15px"> -->
+<link rel="stylesheet" href="style.css">
+<style type="screen.css">
+    <style>
+      a {
+        text-decoration: none;
+      }
+      a:link {
+        color: #6b5b95;
+      }
+      a:visited {
+        color: #feb236;
+      }
+      a:hover {
+        color: #d64161;
+      }
+</style>
+	
+<!-- Format code blocks. Must use code tag inside of pre tags to get the block effect-->
+<style type="text/css">
+	pre code {
+	  background-color: #eee;
+	  border: 1px solid #999;
+	  display: block;
+	  padding: 20px;
+	}
+</style>
+
+</head>
+<Body>
+<h1>Blow up image from PyMOL for a wall hanging</h1>
+
+
+<p><b>Goal:</b> Remake a published figure with square dimensions (28in by 28in) at 225 dpi. This leads to an image that is 5 to 15 MB is the size after conversion to tiff. Annotations should be added manually to this tiff file.</p>
+
+<h3>Protocol:</h3>
+
+<ol>
+<li><code>set hash_max, 2000</code> in pymolrc.</li>
+<li><code>set ray_shadows, off</code>.</li>
+<li>Load the structure via pdb or pse file or a pml file.</li>
+<li>Set the X and Y in inches in the Draw/Ray.</li>
+<li>Set the units to inches.</li>
+<li>Set the DPI to 225.</li>
+<li>Turn off transparent background.</li>
+<li>Ray trace.</li>
+<li>Save png file. </li>
+<li>Save as pse file (use the spse shortcut) and save pml file used to make the image.</li>
+<li>Skip ahead to use <b>png2tiff</b> if you have no annotations to add. 
+<hr>
+<li>Load image file into inkscape as a png file and using the dimensions of the image.</li>
+<li>Change the dimensions of the document to those of the image.</li>
+<li>Set the font to Helvetica, 72 point. </li>
+<li>Use control-D to duplicate the first label to use as a template to make additional labels.</li>
+<li>Add the arrows with a weight of 4. Draw a horizonal arrow first and then duplicate it.</li>
+<li>Save as a svg file so that the anotatations can be recycled at a later time. </li>
+<li>Export as png file using the export function in the right panel. Be sure that the orignal dimensions are used to save the image.</li>
+</ol>
+<hr>
+<ol>
+<li>Convert to tiff file with the unix <b>convert</b> program that comes with imagemagik, which is available from homebrew or MacPorts on the Mac, CygWin on Windows, and various software managers on Linux. </li>
+<li>To convert several to many png files to tiff files, use the bash script below. The script will convert all pngs in a folder to tiff files. All you enter is <b>png2tiff</b>.</li>
+<li>If you put this code into <b>png2tiff.sh</b>, store it in your <b>~/Scripts</b> folder, and then add <b>source ~/Scripts/png2tiff.sh</b> to your .bashrc or .zshrc file, this function will be available anywhere in your home account by entering <b>png2tiff</b>. You will never have to search for the script. I actually store the command <b>source ~/Scripts/png2tiff.sh</b> in <b>.bashFunctionSources</b>. I then source this file from my  <b>.zshenv</b> file, which is where I keep all of my PATHs, sources, and exports. This file is in turn sourced by my .zshrc file. I can enter <b>more ~/.bashFunctionSources</b> from anywhere to see a list of the scripts that are available. I have also mapped this command to the alias like <b>alias bf='more ~/.bashFunctionSources'</b> so that I can invoke the list of bash functions form anyhwere in my home directory.</li>
+</ol>
+
+
+<div class="highlight"><pre><code>
+png2tiff()
+{
+echo "Convert all of the png files in a directory to tiffs."
+echo "Usage: png2tiff"
+echo "There are no arguments."
+echo "Explanation"
+echo "Uses the convert program that comes with ImageMagick."
+echo "The latter is a Unix program that can be installed with homebrew or MacPorts."
+echo "Note that the bash command basename takes .png as a second argument,"
+echo "so this function can be adapted to other input filename extensions including ones with several delimiters."
+if [ $# -gt 0 ]; then
+  echo "Convert all png files in a directory to tiffs."
+  echo 1>&2 "$0: too many arguments"
+  echo "Usage: png2tiff"
+  return 2
+fi
+for FILE in ./*.png;
+  do;
+  echo "${FILE}";
+  bbb=$(basename ${FILE} .png);
+  echo "$bbb";
+  convert "${bbb}".png "${bbb}".tiff;
+  echo "Successfully converted png to tiff.";
+  done;
+ls -ltr ./*.tiff;
+echo "All done. Spared of more tedium once again by bash."
+}
+</code>
+</pre>
+</div>
+
+This is much better than having to specify each png file one at a time.
+
+<div class="highlight"><pre><code>covert Fig2b225dpi.png Fig2b225dpi.tiff</code></pre></div>
+
+<ul>
+<li>author: Blaine Mooers</li>
+<li>date: 2019 October 21</li>
+<li>updated by adding png2tiff(): 2020 December 9</li>
+</ul>
+</Body>
+</HTML>
